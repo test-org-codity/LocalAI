@@ -166,11 +166,19 @@ func SanitizeTools(tools Tools) Tools {
 		return tools
 	}
 
-	// Recursively sanitize the JSON structure
 	for i, tool := range toolsData {
 		if function, ok := tool["function"].(map[string]interface{}); ok {
-			// Recursively sanitize the entire tool structure
-			tool["function"] = sanitizeValue(function, fmt.Sprintf("tools[%d].function", i))
+			if parameters, ok := function["parameters"].(map[string]interface{}); ok {
+				if properties, ok := parameters["properties"].(map[string]interface{}); ok {
+					// Sanitize only the properties field, converting null values to empty objects
+					for propName, propValue := range properties {
+						properties[propName] = sanitizeValue(propValue, fmt.Sprintf("tools[%d].function.parameters.properties[%s]", i, propName))
+					}
+					parameters["properties"] = properties
+				}
+				function["parameters"] = parameters
+			}
+			tool["function"] = function
 		}
 		toolsData[i] = tool
 	}
