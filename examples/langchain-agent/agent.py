@@ -1,9 +1,6 @@
 ## Loosely based from https://gist.github.com/wiseman/4a706428eaabf4af1002a07a114f61d6
 
-from io import StringIO
-import sys
 import os
-from typing import Dict, Optional
 
 from langchain.agents import load_tools
 from langchain.agents import initialize_agent
@@ -16,24 +13,16 @@ model_name = os.environ.get('MODEL_NAME', 'gpt-3.5-turbo')
 class PythonREPL:
     """Simulates a standalone Python REPL."""
 
-    def __init__(self):
-        pass        
-
     def run(self, command: str) -> str:
         """Run command and returns anything printed."""
-        # sys.stderr.write("EXECUTING PYTHON CODE:\n---\n" + command + "\n---\n")
-        old_stdout = sys.stdout
-        sys.stdout = mystdout = StringIO()
-        try:
-            exec(command, globals())
-            sys.stdout = old_stdout
-            output = mystdout.getvalue()
-        except Exception as e:
-            sys.stdout = old_stdout
-            output = str(e)
-        # sys.stderr.write("PYTHON OUTPUT: \"" + output + "\"\n")
-        return output
-      
+        # SECURITY WARNING: This is an example only. For production use, implement proper sandboxing.
+        # Recommended: Use subprocess with restricted permissions, containers, or a proper sandboxed interpreter.
+        raise NotImplementedError(
+            "PythonREPL execution is disabled for security reasons. "
+            "This pattern allows arbitrary code execution via LLM output, which can be influenced by prompt injection. "
+            "For safe execution, use: subprocess with restricted permissions, containers, seccomp, or a sandboxed interpreter."
+        )
+
 llm = OpenAI(temperature=0.0, openai_api_base=base_path, model_name=model_name)
 python_repl = Tool(
         "Python REPL",
